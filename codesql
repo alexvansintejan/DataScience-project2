@@ -66,3 +66,8 @@ CREATE TABLE IF NOT EXISTS dim_invoice(
 );
 
 /* inserting info in invoice dimension table */
+
+INSERT INTO dim_invoice(invoice_id, billing_country)
+SELECT InvoiceId, BillingCountry
+FROM MyTunes.invoice;
+
