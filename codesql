@@ -22,11 +22,12 @@ INSERT INTO dim_customers(customer_id, company, first_name, last_name)
 SELECT CustomerId, Company, FirstName, LastName
 FROM MyTunes.Customer;
 
-/* creating album dimension */
+/* creating track dimension */
 
-CREATE TABLE IF NOT EXISTS dim_album(
-	album_key INT auto_increment PRIMARY KEY,
-    album_id INT NOT NULL,
+CREATE TABLE IF NOT EXISTS dim_track(
+	track_key INT auto_increment PRIMARY KEY,
+    track_id INT NOT NULL,
+    name VARCHAR(500) NOT NULL,
     album VARCHAR(500) NOT NULL,
     artist VARCHAR(500) NOT NULL,
     valid_from DATETIME NOT NULL DEFAULT NOW(),
@@ -35,11 +36,11 @@ CREATE TABLE IF NOT EXISTS dim_album(
 
 /* inserting info in album dimension table */
 
-INSERT INTO dim_album(album_id, album, artist)
-SELECT AlbumId, Title, Name
-FROM MyTunes.Album al INNER JOIN MyTunes.Artist ar
-	ON al.ArtistId = ar.ArtistId
-GROUP BY AlbumId;
+INSERT INTO dim_track(track_id, name, album, artist)
+SELECT TrackId, Name, tr.AlbumId, al.ArtistId
+FROM MyTunes.Track tr INNER JOIN MyTunes.Album al
+	ON tr.AlbumId = al.AlbumId 
+GROUP BY ArtistId;
 
 
 /* creating time dimension */
@@ -55,7 +56,9 @@ CREATE TABLE IF NOT EXISTS dim_time(
 
 /* inserting info in time dimension table */
 
-
+INSERT INTO dim_time(year, month, quarter, day, day_of_week)
+select distinct year(InvoiceDate), month(InvoiceDate), quarter(InvoiceDate), dayofmonth(InvoiceDate), dayofweek(InvoiceDate)
+from MyTunes.invoice;
 
 /* creating invoice dimension */
 
